@@ -14,7 +14,6 @@ pub struct DeferredParticle {
   pub timestamp: f32, // Timestamp when the particle should be added
 }
 
-
 pub struct ParticleEntityHyprameters {
   pub particle: Particle,
   pub color: Color,
@@ -41,7 +40,7 @@ impl Particle {
   }
 
   pub fn get_size(&self) -> f32 {
-    self.mass.powf(2.).ln()
+    self.mass.powf(2.).ln() + 1.
   }
 
   pub fn get_color(&self, is_player: bool) -> Color {

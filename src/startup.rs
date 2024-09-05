@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::lib::components::particle::spawn_particle;
 use crate::lib::components::player::entity_promote_to_player;
-use crate::lib::prelude::Particle;
+use crate::lib::prelude::{LaserBundle, Particle};
 
 
 pub fn setup(
@@ -17,4 +17,10 @@ pub fn setup(
   let color = pp.get_color(true);
   let player = spawn_particle(pp, &mut commands, &mut materials, color);
   entity_promote_to_player(player, &mut commands);
+
+  // add UI
+  let laser_id = commands.spawn(LaserBundle::new()).id();
+  let mut laser = commands.entity(laser_id);
+  laser.remove::<Visibility>();
+  laser.insert(Visibility::Hidden);
 }

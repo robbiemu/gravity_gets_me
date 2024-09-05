@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::lib::components::particle::Particle;
-use crate::lib::components::player::Player;
+use crate::lib::prelude::{Particle, Player};
 
 
 const GRAVITY_CONSTANT: f32 = 1.0; // Adjust as necessary for your game
