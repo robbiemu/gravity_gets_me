@@ -242,7 +242,8 @@ Contributions are welcome! Here are several ways you can contribute:
 
 ##  License
 
-This project is protected under the [SELECT-A-LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
+This project is protected under the [LGPL 3.0](https://choosealicense.com/licenses/gpl-3.0/) License. For more details, refer to the [LICENSE](./LICENSE.txt) file.
+Licensing governs the use and distribution of software components within this repository. The GNU Lesser General Public License version 3 ensures that modifications to the library can be freely used and distributed, while requiring users to provide source code and license information.
 
 ---
 
