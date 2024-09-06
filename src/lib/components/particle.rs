@@ -22,9 +22,12 @@ pub struct ParticleEntityHyprameters {
 }
 
 impl Particle {
-  pub fn new_entity_hyperparameters() -> ParticleEntityHyprameters {
+  pub fn new_entity_hyperparameters(bound: f32) -> ParticleEntityHyprameters {
+    let max_mass = (bound * 2000.) as i32;
+    let max_velocity = bound * 333.;
+
     let mut rng = rand::thread_rng();
-    let particle = Particle { mass: rng.gen_range(1..=1000) as f32 };
+    let particle = Particle { mass: rng.gen_range(1..=max_mass) as f32 };
     let color = particle.get_color(false);
     let position = Vec3::new(
       rng.gen_range(-500.0..500.0),
@@ -32,8 +35,8 @@ impl Particle {
       0.0, // Z-coordinate (0 for 2D games)
     );
     let trajectory = Velocity::linear(Vec2::new(
-      rand::random::<f32>() * 100.0,
-      rand::random::<f32>() * 100.0,
+      rand::random::<f32>() * max_velocity,
+      rand::random::<f32>() * max_velocity,
     ));
 
     ParticleEntityHyprameters { particle, color, position, trajectory }

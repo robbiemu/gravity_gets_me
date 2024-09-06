@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
 
 use crate::{
-  game_state::GlobalParticleCount,
+  game_state::{GlobalParticleCount, GravitationalConstant},
   lib::{
     components::particle::{
       schedule_particle_insertion, spawn_particle, DeferredParticle,
@@ -15,6 +15,7 @@ use crate::{
 pub fn replace_deferred_particles(
   mut commands: Commands,
   time: Res<Time>,
+  gravitational_constant: Res<GravitationalConstant>,
   mut materials: ResMut<Assets<ColorMaterial>>,
   mut query: Query<(Entity, &DeferredParticle)>,
 ) {
@@ -26,7 +27,8 @@ pub fn replace_deferred_particles(
       commands.entity(entity).remove::<DeferredParticle>();
 
       // Spawn the actual particle entity
-      let p = Particle::new_entity_hyperparameters();
+      let p =
+        Particle::new_entity_hyperparameters(gravitational_constant.value);
       let entity =
         spawn_particle(p.particle, &mut commands, &mut materials, p.color);
       commands.entity(entity).insert(p.trajectory);
@@ -46,7 +48,7 @@ pub fn remove_off_screen_particles(
   >,
   deferred_query: Query<(Entity, &DeferredParticle)>,
   camera_query: Query<&Camera>,
-  global_particle_count: ResMut<GlobalParticleCount>,
+  global_particle_count: Res<GlobalParticleCount>,
   time: Res<Time>,
 ) {
   // Get the camera's logical viewport size

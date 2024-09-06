@@ -12,15 +12,22 @@ pub fn setup(
   // Setup camera
   commands.spawn(Camera2dBundle::default());
 
-  // Spawn player's particle with circle shape
-  let pp = Particle { mass: 50. };
-  let color = pp.get_color(true);
-  let player = spawn_particle(pp, &mut commands, &mut materials, color);
-  entity_promote_to_player(player, &mut commands);
+  spawn_player(&mut commands, &mut materials);
 
-  // add UI
+  // add HUD
   let laser_id = commands.spawn(LaserBundle::new()).id();
   let mut laser = commands.entity(laser_id);
   laser.remove::<Visibility>();
   laser.insert(Visibility::Hidden);
+}
+
+pub fn spawn_player(
+  commands: &mut Commands,
+  materials: &mut ResMut<Assets<ColorMaterial>>,
+) {
+  // Spawn player's particle with circle shape
+  let pp = Particle { mass: 50. };
+  let color = pp.get_color(true);
+  let player = spawn_particle(pp, commands, materials, color);
+  entity_promote_to_player(player, commands);
 }

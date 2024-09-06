@@ -4,8 +4,10 @@ use bevy_rapier2d::plugin::RapierContext;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
-  aim,
-  game_state::AimingDirection,
+  game_state::{
+    AimingDirection, GameMode, GameState, GlobalParticleCount,
+    GravitationalConstant,
+  },
   lib::{
     components::player::swap_player_status,
     prelude::{Laser, Particle, Player},
@@ -20,10 +22,17 @@ pub fn handle_ui_fire_and_aiming(
   rapier_context: ResMut<RapierContext>,
   mut keyboard_input: ResMut<ButtonInput<KeyCode>>,
   mut aiming_direction: ResMut<AimingDirection>,
+  game_state: Res<GameState>,
+  mut gravitational_constant: ResMut<GravitationalConstant>,
+  mut global_particle_count: ResMut<GlobalParticleCount>,
   mut laser_query: Query<(Entity, &mut Path), With<Laser>>,
   mut player_query: Query<(Entity, &Transform), With<Player>>,
-  mut particle_query: Query<(Entity, &mut Handle<ColorMaterial>, &Particle)>, // Query for particle entities
+  mut particles_query: Query<(Entity, &mut Handle<ColorMaterial>, &Particle)>,
+  velocities_query: Query<&Velocity>,
 ) {
+  if game_state.mode != GameMode::InPlay {
+    return;
+  }
   let (player_id, player_transform) = player_query.single_mut();
 
   // Update angle based on input
@@ -36,32 +45,18 @@ pub fn handle_ui_fire_and_aiming(
   let mut rotation = 0.;
   if keyboard_input.pressed(KeyCode::ArrowLeft) {
     rotation = -rotation_speed;
-    eprintln!("rotated {rotation}");
   }
   if keyboard_input.pressed(KeyCode::ArrowRight) {
     rotation = rotation_speed;
-    eprintln!(
-      "rotated {rotation}, {:?} @ {:?} -> {:?} or {:?}",
-      aiming_direction.direction,
-      Vec2::from_angle(rotation),
-      Vec2::from_angle(rotation).rotate(aiming_direction.direction),
-      aiming_direction
-        .direction
-        .rotate(Vec2::from_angle(rotation))
-    );
   }
   aiming_direction.direction =
     Vec2::from_angle(rotation).rotate(aiming_direction.direction);
 
-
-  // Draw line indicating shooting trajectory
   // Draw line indicating shooting trajectory
   if is_drawing_line {
     // Calculate shooting line start and end
     let start = player_transform.translation.truncate();
     let end = start + aiming_direction.direction * 1000.0; // Adjust length as needed
-
-    dbg!(start, end);
 
     // Check if there's an existing laser
     let (laser, mut path) = laser_query.single_mut();
@@ -97,12 +92,19 @@ pub fn handle_ui_fire_and_aiming(
 
       // Replace the player with the particle entity (or handle the swap logic)
       swap_player_status(
-        Some(player_id),
+        player_id,
         entity,
         &mut commands,
         &mut materials,
-        &mut particle_query,
+        &mut particles_query,
+        &velocities_query,
       );
+      gravitational_constant.value += 0.02;
+      eprintln!(
+        "increasing gravity difficulty: {:?}",
+        gravitational_constant.value
+      );
+      global_particle_count.value += 1;
     } else {
       println!(
         "No entity hit with ray_pos: {:?} and direction: {:?}",

@@ -1,7 +1,4 @@
-use bevy::{
-  color::{palettes::css::RED, Color},
-  prelude::*,
-};
+use bevy::{color::palettes::css::RED, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 
 #[derive(Component, Default)]
